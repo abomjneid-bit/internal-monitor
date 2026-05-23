@@ -1,29 +1,19 @@
 const express = require("express");
 const path = require("path");
-const mongoose = require("mongoose");
+const fs = require("fs");
 
 const app = express();
 
 app.set("trust proxy", true);
-
 app.use(express.json());
 
-mongoose.connect(process.env.MONGO_URI);
-
-const VisitSchema = new mongoose.Schema({
-  ip: String,
-  time: String,
-  headers: Object,
-  data: Object
-});
-
-const Visit = mongoose.model("Visit", VisitSchema);
-
+// الصفحة الرئيسية
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-app.post("/log", async (req, res) => {
+// تسجيل الزيارات في ملفات
+app.post("/log", (req, res) => {
 
   const logData = {
     ip: req.ip,
@@ -34,11 +24,24 @@ app.post("/log", async (req, res) => {
 
   console.log(logData);
 
-  await Visit.create(logData);
+  // إنشاء مجلد logs
+  const dir = path.join(__dirname, "logs");
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
+  }
+
+  // اسم ملف لكل زيارة
+  const filename = `${Date.now()}-${Math.floor(Math.random() * 1000)}.json`;
+
+  fs.writeFileSync(
+    path.join(dir, filename),
+    JSON.stringify(logData, null, 2)
+  );
 
   res.sendStatus(200);
 });
 
+// تشغيل السيرفر
 app.listen(process.env.PORT || 3000, () => {
   console.log("Running...");
 });
