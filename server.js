@@ -3,6 +3,8 @@ const path = require("path");
 
 const app = express();
 
+app.set("trust proxy", true);
+
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -11,7 +13,10 @@ app.get("/", (req, res) => {
 
 app.post("/log", (req, res) => {
 
-  console.log("IP:", req.ip);
+  console.log("REAL IP:", req.ip);
+
+  console.log("HEADERS:", req.headers);
+
   console.log("DATA:", req.body);
 
   res.sendStatus(200);
