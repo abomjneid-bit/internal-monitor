@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>Internal Access</title>
+</head>
+<body>
+
+<h2>Internal Resource</h2>
+
+<script>
+fetch("https://YOUR-BACKEND-URL/log", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    userAgent: navigator.userAgent,
+    language: navigator.language,
+    time: new Date().toISOString()
+  })
+});
+</script>
+
+</body>
+</html>
